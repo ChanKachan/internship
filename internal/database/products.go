@@ -45,10 +45,10 @@ func (p *productDB) CreateProduct(product models.Product) (models.Product, error
 		barcode.Generate())
 
 	if err != nil {
-		return err
+		return product, err
 	}
 
-	return nil
+	return product, nil
 }
 
 func (p *productDB) GetProducts() ([]models.Product, error) {
