@@ -1,10 +1,15 @@
 package models
 
+import (
+	"encoding/json"
+	"github.com/google/uuid"
+)
+
 type Product struct {
-	ID          string `json:"id"`
-	Name        string `json:"product_name"`
-	Description string `json:"description"`
-	//characteristic в бд создан как json. Нужно его реализовать
-	Weight  int    `json:"weight"`
-	Barcode string `json:"barcode"`
+	ID             uuid.UUID       `json:"id"`
+	Name           string          `json:"product_name"`
+	Description    string          `json:"description"`
+	Characteristic json.RawMessage `json:"characteristic"`
+	Weight         int             `json:"weight"`
+	Barcode        string          `json:"barcode"`
 }
