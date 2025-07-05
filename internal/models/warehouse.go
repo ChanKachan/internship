@@ -1,6 +1,8 @@
 package models
 
+import "github.com/google/uuid"
+
 type Warehouse struct {
-	ID      string  `json:"id"`
-	Address Address `json:"address"`
+	ID      uuid.UUID `json:"id"`
+	Address Address   `json:"address"`
 }
