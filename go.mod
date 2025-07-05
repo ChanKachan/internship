@@ -3,9 +3,9 @@ module internship
 go 1.24.4
 
 require (
-	github.com/boombuler/barcode v1.0.2
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.7.5
+	github.com/joho/godotenv v1.5.1
 	go.uber.org/zap v1.27.0
 )
 
