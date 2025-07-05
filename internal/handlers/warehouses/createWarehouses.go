@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"internship/internal/database"
 	"internship/internal/models"
-	"internship/internal/uuid"
+	"internship/internal/myuuid"
 	"net/http"
 	"strconv"
 )
@@ -21,8 +21,8 @@ func CreateWarehouses(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&warehouse)
 
-	warehouse.Address.ID = uuid.GenerateUuid()
-	warehouse.ID = uuid.GenerateUuid()
+	warehouse.Address.ID = myuuid.GenerateUuid()
+	warehouse.ID = myuuid.GenerateUuid()
 
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -39,6 +39,6 @@ func CreateWarehouses(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(map[string]string{
-		"warehouse_id": warehouse.ID, "message": "Склад успешно добавлен!", "code": strconv.Itoa(http.StatusOK),
+		"warehouse_id": warehouse.ID.String(), "message": "Склад успешно добавлен!", "code": strconv.Itoa(http.StatusOK),
 	})
 }
