@@ -30,8 +30,9 @@ func (w warehouseDB) CreateWarehouseWithAddress(warehouse models.Warehouse) erro
 		zap.String("package", "database.CreateWarehouseWithAddress"))
 
 	tx, err := w.dbpool.Begin(context.Background())
-	defer w.dbpool.Close()
+
 	defer tx.Rollback(context.Background())
+	defer w.dbpool.Close()
 
 	_, err = tx.Exec(context.Background(),
 		`INSERT INTO address (id, city,street,building) VALUES ($1,$2,$3,$4)`,
@@ -73,6 +74,7 @@ func (w warehouseDB) GetWarehouses() ([]models.Warehouse, error) {
 	)
 
 	defer rows.Close()
+	defer w.dbpool.Close()
 
 	if err != nil {
 		logg.Logger.Error(err.Error())

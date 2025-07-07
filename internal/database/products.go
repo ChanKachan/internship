@@ -36,6 +36,7 @@ func (p *productDB) CreateProduct(product models.Product) (models.Product, error
 	product.ID = myuuid.GenerateUuid()
 
 	defer cancel()
+	defer p.dbpool.Close()
 
 	_, err := p.dbpool.Exec(ctx,
 		`INSERT INTO products VALUES ($1, $2, $3, $4, $5, $6)`,
@@ -62,13 +63,16 @@ func (p *productDB) GetProducts() ([]models.Product, error) {
 
 	logg.Logger.Debug("Отправляю SELECT запрос в таблицу products",
 		zap.String("package", "database.GetProducts"))
+
 	rows, err := p.dbpool.Query(context.Background(),
 		`SELECT id,product_name,description,characteristics,weight,barcode FROM products`,
 	)
+
 	logg.Logger.Debug("SELECT запрос на таблицу products успешно завершен",
 		zap.String("package", "database.GetProducts"))
 
 	defer rows.Close()
+	defer p.dbpool.Close()
 
 	if err != nil {
 		logg.Logger.Error(err.Error())
@@ -106,6 +110,7 @@ func (p *productDB) UpdateProduct(product models.Product) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 
 	defer cancel()
+	defer p.dbpool.Close()
 
 	logg.Logger.Info("Отправляю запрос на обновление данных продуктов в базу данных.",
 		zap.String("package", "database.UpdateProduct"))
