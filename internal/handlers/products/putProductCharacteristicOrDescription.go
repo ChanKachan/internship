@@ -8,14 +8,14 @@ import (
 	"strconv"
 )
 
-func PutProductCharacteristicOrDescription(w http.ResponseWriter, r *http.Request) {
+func (p *productHandler) PutProductCharacteristicOrDescription(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPut {
 		w.Header().Set("Allow", "PUT")
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	dbpool := database.NewProductDB(database.ConnectDatabase())
+	dbpool := database.NewProductDB(p.dbpool)
 	var product models.Product
 
 	err := json.NewDecoder(r.Body).Decode(&product)
