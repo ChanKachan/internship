@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func GetWarehouses(w http.ResponseWriter, r *http.Request) {
+func (wa warehouseHandler) GetWarehouses(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	if r.Method != http.MethodGet {
 		w.Header().Set("Allow", "GET")
@@ -15,7 +15,7 @@ func GetWarehouses(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	dbpool := database.NewWarehouseDB(database.ConnectDatabase())
+	dbpool := database.NewWarehouseDB(wa.dbpool)
 
 	warehouses, err := dbpool.GetWarehouses()
 

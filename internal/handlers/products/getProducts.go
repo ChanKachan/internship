@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func GetProducts(w http.ResponseWriter, r *http.Request) {
+func (p *productHandler) GetProducts(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
 	if r.Method != http.MethodGet {
@@ -16,7 +16,7 @@ func GetProducts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	dbpool := database.NewProductDB(database.ConnectDatabase())
+	dbpool := database.NewProductDB(p.dbpool)
 
 	product, err := dbpool.GetProducts()
 

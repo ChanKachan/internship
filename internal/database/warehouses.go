@@ -30,7 +30,7 @@ func (w warehouseDB) CreateWarehouseWithAddress(warehouse models.Warehouse) erro
 		zap.String("package", "database.CreateWarehouseWithAddress"))
 
 	tx, err := w.dbpool.Begin(context.Background())
-	defer w.dbpool.Close()
+
 	defer tx.Rollback(context.Background())
 
 	_, err = tx.Exec(context.Background(),
@@ -84,7 +84,6 @@ func (w warehouseDB) GetWarehouses() ([]models.Warehouse, error) {
 	var city, street, building string
 
 	for rows.Next() {
-		//type warehouse models.Warehouse
 		rows.Scan(&id, &addressID, &city, &street, &building)
 		address := models.Address{addressID, city, street, building}
 		warehouse := models.Warehouse{id, address}

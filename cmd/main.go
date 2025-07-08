@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"internship/internal/database"
 	"internship/internal/handlers"
 	"internship/internal/handlers/products"
 	"internship/internal/handlers/warehouses"
@@ -13,7 +14,9 @@ import (
 
 func main() {
 	logg.InitLogger()
+	dbpool := database.ConnectDatabase()
 
+	defer dbpool.Close()
 	defer logg.Logger.Sync()
 
 	dir, _ := os.Getwd()
@@ -21,12 +24,14 @@ func main() {
 
 	http.HandleFunc("/api/heath", handlers.Heath)
 	//http.Handle("/api/create_warehouse", middleware.CreateAddressForWarehouses(http.HandlerFunc(warehouses.CreateWarehouses)))
-	http.HandleFunc("/api/create_warehouse", warehouses.CreateWarehouses)
-	http.HandleFunc("/api/warehouses", warehouses.GetWarehouses)
+	warehouse := warehouses.NewWarehouseHandler(dbpool)
+	http.HandleFunc("/api/create_warehouse", warehouse.CreateWarehouses)
+	http.HandleFunc("/api/warehouses", warehouse.GetWarehouses)
 
-	http.HandleFunc("/api/create_product", products.CreateProduct)
-	http.HandleFunc("/api/products", products.GetProducts)
-	http.HandleFunc("/api/update_product", products.PutProductCharacteristicOrDescription)
+	product := products.NewProductHandler(dbpool)
+	http.HandleFunc("/api/create_product", product.CreateProduct)
+	http.HandleFunc("/api/products", product.GetProducts)
+	http.HandleFunc("/api/update_product", product.PutProductCharacteristicOrDescription)
 
 	fmt.Println("Server is running on http://localhost:8080")
 	http.ListenAndServe(":8080", nil)
