@@ -24,8 +24,9 @@ func main() {
 
 	http.HandleFunc("/api/heath", handlers.Heath)
 	//http.Handle("/api/create_warehouse", middleware.CreateAddressForWarehouses(http.HandlerFunc(warehouses.CreateWarehouses)))
-	http.HandleFunc("/api/create_warehouse", warehouses.CreateWarehouses)
-	http.HandleFunc("/api/warehouses", warehouses.GetWarehouses)
+	warehouse := warehouses.NewWarehouseHandler(dbpool)
+	http.HandleFunc("/api/create_warehouse", warehouse.CreateWarehouses)
+	http.HandleFunc("/api/warehouses", warehouse.GetWarehouses)
 
 	product := products.NewProductHandler(dbpool)
 	http.HandleFunc("/api/create_product", product.CreateProduct)
