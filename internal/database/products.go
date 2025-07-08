@@ -36,7 +36,6 @@ func (p *productDB) CreateProduct(product models.Product) (models.Product, error
 	product.ID = myuuid.GenerateUuid()
 
 	defer cancel()
-	defer p.dbpool.Close()
 
 	_, err := p.dbpool.Exec(ctx,
 		`INSERT INTO products VALUES ($1, $2, $3, $4, $5, $6)`,
@@ -110,7 +109,6 @@ func (p *productDB) UpdateProduct(product models.Product) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 
 	defer cancel()
-	defer p.dbpool.Close()
 
 	logg.Logger.Info("Отправляю запрос на обновление данных продуктов в базу данных.",
 		zap.String("package", "database.UpdateProduct"))
