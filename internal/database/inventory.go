@@ -1,9 +1,13 @@
 package database
 
 import (
+	"context"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"go.uber.org/zap"
+	"internship/internal/logg"
 	"internship/internal/models"
+	"time"
 )
 
 /*
@@ -35,5 +39,26 @@ func NewInventoryDB(dbpool *pgxpool.Pool) *inventoryDB {
 }
 
 func (i *inventoryDB) CreateInventory(inventory models.Inventory) error {
+	logg.Logger.Info("Отправляю запрос на создание связи товара и склада в базу данных.",
+		zap.String("package", "database.CreateInventory"))
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+
+	defer cancel()
+
+	_, err := i.dbpool.Exec(ctx,
+		`INSERT INTO inventory (warehouse_id,product_id,price) VALUES ($1, $2, $3)`,
+		inventory.WarehouseId,
+		inventory.ProductId,
+		inventory.Price)
+
+	if err != nil {
+		logg.Logger.Error(err.Error(), zap.String("package", "database.CreateInventory"))
+		return err
+	}
+
+	logg.Logger.Info("Запрос успешно завершен.",
+		zap.String("package", "database.CreateInventory"))
+
 	return nil
 }
