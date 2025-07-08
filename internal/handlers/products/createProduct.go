@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-func CreateProduct(w http.ResponseWriter, r *http.Request) {
+func (p *productHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		w.Header().Set("Allow", "POST")
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
@@ -17,7 +17,7 @@ func CreateProduct(w http.ResponseWriter, r *http.Request) {
 
 	var product models.Product
 
-	dbpool := database.NewProductDB(database.ConnectDatabase())
+	dbpool := database.NewProductDB(p.dbpool)
 
 	err := json.NewDecoder(r.Body).Decode(&product)
 
