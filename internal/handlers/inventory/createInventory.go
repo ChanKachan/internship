@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-func CreateInventory(w http.ResponseWriter, r *http.Request) {
+func (i *inventoryHandler) CreateInventory(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		w.Header().Set("Allow", "POST")
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
@@ -17,7 +17,7 @@ func CreateInventory(w http.ResponseWriter, r *http.Request) {
 
 	var inventory models.Inventory
 
-	dbpool := database.NewInventoryDB(database.ConnectDatabase())
+	dbpool := database.NewInventoryDB(i.dbpool)
 
 	err := json.NewDecoder(r.Body).Decode(&inventory)
 

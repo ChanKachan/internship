@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"internship/internal/database"
 	"internship/internal/handlers"
+	"internship/internal/handlers/inventory"
 	"internship/internal/handlers/products"
 	"internship/internal/handlers/warehouses"
 	"internship/internal/logg"
@@ -32,6 +33,9 @@ func main() {
 	http.HandleFunc("/api/create_product", product.CreateProduct)
 	http.HandleFunc("/api/products", product.GetProducts)
 	http.HandleFunc("/api/update_product", product.PutProductCharacteristicOrDescription)
+
+	inventory := inventory.NewInventoryHandler(dbpool)
+	http.HandleFunc("/api/create_inventory", inventory.CreateInventory)
 
 	fmt.Println("Server is running on http://localhost:8080")
 	http.ListenAndServe(":8080", nil)
