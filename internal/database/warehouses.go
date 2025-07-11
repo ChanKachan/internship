@@ -9,9 +9,12 @@ import (
 	"internship/internal/models"
 )
 
-type Warehouse interface {
+type PostWarehouse interface {
 	CreateWarehouseWithAddress(warehouse models.Warehouse) error
-	GetWarehouses() (Warehouse, error)
+}
+
+type GetWarehouse interface {
+	GetWarehouses() ([]models.Warehouse, error)
 }
 
 type warehouseDB struct {
