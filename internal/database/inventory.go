@@ -19,15 +19,20 @@ import (
 6) Покупка товаров со склада: запрос который получает в себе индектификатор склада, идектификаторы товаров и их количество. Уменьшает количетсво товаров на складе. Если какой то товар был уже продан и количества не хватает вернуть ошибку.
 */
 
-type Inventory interface {
+type PostInventory interface {
 	CreateInventory(inventory models.Inventory) error
+}
+
+type PutInventory interface {
 	UpdateQuantity(inventory models.Inventory) error
 	UpdateDiscount(inventory models.Inventory) error
-	GetProductsFromWarehouse(inventory models.Inventory) (models.Inventory, error)
-	GetProductInformationInStock(inventory models.Inventory) (models.Inventory, error)
-	GetCostOfProductInStock(warehouseID, productID uuid.UUID, count int) (models.Inventory, error)
 	ReduceStockItems(inventory []models.Inventory) error
 }
+
+type GetInventory interface {
+	GetProductsFromWarehouse(inventory models.Inventory) (models.Inventory, error)
+	GetProductInformationInStock(inventory models.Inventory) (models.Inventory, error)
+	GetCostOfProductInStock(inventory models.Inventory) (models.Inventory, error)
 
 type inventoryDB struct {
 	dbpool *pgxpool.Pool
