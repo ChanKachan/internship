@@ -71,7 +71,6 @@ func (p *productDB) GetProducts() ([]models.Product, error) {
 		zap.String("package", "database.GetProducts"))
 
 	defer rows.Close()
-	defer p.dbpool.Close()
 
 	if err != nil {
 		logg.Logger.Error(err.Error())
