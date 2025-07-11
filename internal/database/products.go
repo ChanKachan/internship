@@ -14,10 +14,16 @@ import (
 	"time"
 )
 
-type Product interface {
+type PostProduct interface {
 	CreateProduct(models.Product) error
+}
+
+type GetProduct interface {
 	GetProducts() ([]models.Product, error)
-	UpdateProduct(product Product) error
+}
+
+type PutProduct interface {
+	UpdateProduct(product models.Product) error
 }
 
 type productDB struct {
