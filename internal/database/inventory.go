@@ -2,7 +2,6 @@ package database
 
 import (
 	"context"
-	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"
 	"internship/internal/logg"
@@ -59,6 +58,56 @@ func (i *inventoryDB) CreateInventory(inventory models.Inventory) error {
 
 	logg.Logger.Info("Запрос успешно завершен.",
 		zap.String("package", "database.CreateInventory"))
+
+	return nil
+}
+
+func (i *inventoryDB) UpdateQuantity(inventory models.Inventory) error {
+	logg.Logger.Info("Запрос на обновление количество товара на складе.",
+		zap.String("package", "database.UpdateQuantity"))
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+
+	defer cancel()
+
+	_, err := i.dbpool.Exec(ctx,
+		`UPDATE inventory SET quantity_of_product = $1 WHERE product_id = $2 AND warehouse_id = $3`,
+		inventory.Quantity,
+		inventory.ProductId,
+		inventory.WarehouseId)
+
+	if err != nil {
+		logg.Logger.Error(err.Error(), zap.String("package", "database.UpdateQuantity"))
+		return err
+	}
+
+	logg.Logger.Info("Запрос успешно завершен.",
+		zap.String("package", "database.UpdateQuantity"))
+
+	return nil
+}
+
+func (i *inventoryDB) UpdateDiscount(inventory models.Inventory) error {
+	logg.Logger.Info("Запрос на скидку для товара в конкретном складе.",
+		zap.String("package", "database.UpdateDiscount"))
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+
+	defer cancel()
+
+	_, err := i.dbpool.Exec(ctx,
+		`UPDATE inventory SET percentage_discount_from_price = $1 WHERE product_id = $2 AND warehouse_id = $3`,
+		inventory.Percentage,
+		inventory.ProductId,
+		inventory.WarehouseId)
+
+	if err != nil {
+		logg.Logger.Error(err.Error(), zap.String("package", "database.UpdateDiscount"))
+		return err
+	}
+
+	logg.Logger.Info("Запрос успешно завершен.",
+		zap.String("package", "database.UpdateDiscount"))
 
 	return nil
 }
