@@ -33,6 +33,7 @@ type GetInventory interface {
 	GetProductsFromWarehouse(inventory models.Inventory) (models.Inventory, error)
 	GetProductInformationInStock(inventory models.Inventory) (models.Inventory, error)
 	GetCostOfProductInStock(inventory models.Inventory) (models.Inventory, error)
+}
 
 type inventoryDB struct {
 	dbpool *pgxpool.Pool
