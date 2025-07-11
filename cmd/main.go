@@ -36,6 +36,8 @@ func main() {
 
 	inventory := inventory.NewInventoryHandler(dbpool)
 	http.HandleFunc("/api/create_inventory", inventory.CreateInventory)
+	http.HandleFunc("/api/inventory/update_quantity", inventory.UpdateQuantity)
+	http.HandleFunc("/api/inventory/update_discount", inventory.UpdateDiscount)
 
 	fmt.Println("Server is running on http://localhost:8080")
 	http.ListenAndServe(":8080", nil)
