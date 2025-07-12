@@ -15,7 +15,7 @@ import (
 )
 
 type PostProduct interface {
-	CreateProduct(models.Product) error
+	CreateProduct(models.Product) (models.Product, error)
 }
 
 type GetProduct interface {
