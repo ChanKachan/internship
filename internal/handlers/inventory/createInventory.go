@@ -35,12 +35,6 @@ func (i *inventoryHandler) CreateInventory(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(models.ErrorItem{Message: err.Error(), Code: http.StatusBadRequest})
-		return
-	}
-
 	json.NewEncoder(w).Encode(map[string]string{
 		"product_id":   inventory.ProductId.String(),
 		"warehouse_id": inventory.WarehouseId.String(),
