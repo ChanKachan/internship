@@ -5,6 +5,7 @@ import (
 	"internship/internal/database"
 	"internship/internal/models"
 	"net/http"
+	"strconv"
 )
 
 // todo Нужно метод работает без пагинации.
@@ -19,12 +20,20 @@ func (i *inventoryHandler) GetInventory(w http.ResponseWriter, r *http.Request) 
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	//offset := r.URL.Query().Get("offset")
-	//limit := r.URL.Query().Get("limit")
+	var inventoryItems models.Inventory
+	offset, _ := strconv.Atoi(r.URL.Query().Get("offset"))
+	limit, _ := strconv.Atoi(r.URL.Query().Get("limit"))
+
+	err := json.NewDecoder(r.Body).Decode(&inventoryItems)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(models.ErrorItem{Message: err.Error(), Code: http.StatusBadRequest})
+		return
+	}
 
 	dbpool := database.NewInventoryDB(i.dbpool)
 
-	inventory, err := dbpool.GetProductsFromWarehouse(10, 0)
+	inventory, err := dbpool.GetProductsFromWarehouse(inventoryItems.WarehouseId, limit, offset)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(models.ErrorItem{Message: err.Error(), Code: http.StatusBadRequest})

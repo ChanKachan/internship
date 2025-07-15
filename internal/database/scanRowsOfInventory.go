@@ -38,15 +38,15 @@ func (s *scanRows) ScanRowsOfWarehouse() ([]models.Warehouse, error) {
 	return warehouses, nil
 }
 
-func (s *scanRows) ScanRowsOfInventory() ([]models.Inventory, error) {
-	inventory := []models.Inventory{}
+func (s *scanRows) ScanRowsOfInventory() ([]models.ProductsBriefInfoInWarehouse, error) {
+	inventory := []models.ProductsBriefInfoInWarehouse{}
 	var productID uuid.UUID
 	var productName string
 	var price, discounted_price int
 
 	for s.rows.Next() {
 		s.rows.Scan(&productID, &productName, &price, &discounted_price)
-		inventoryItems := models.Inventory{ProductId: productID, ProductName: productName, Price: price, PriceWithDiscount: discounted_price}
+		inventoryItems := models.ProductsBriefInfoInWarehouse{ProductId: productID, ProductName: productName, Price: price, PriceWithDiscount: discounted_price}
 		inventory = append(inventory, inventoryItems)
 	}
 

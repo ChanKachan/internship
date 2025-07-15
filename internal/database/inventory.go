@@ -2,10 +2,12 @@ package database
 
 import (
 	"context"
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"
 	"internship/internal/logg"
 	"internship/internal/models"
+	"internship/internal/pagination/inventoryPagination"
 	"time"
 )
 
@@ -30,7 +32,7 @@ type PutInventory interface {
 }
 
 type GetInventory interface {
-	GetProductsFromWarehouse(limit, offset int) ([]models.Inventory, error)
+	GetProductsFromWarehouse(warehouseID uuid.UUID, limit, offset int) ([]models.Inventory, error)
 	GetProductInformationInStock(inventory models.Inventory) (models.Inventory, error)
 	GetCostOfProductInStock(inventory models.Inventory) (models.Inventory, error)
 }
@@ -118,13 +120,19 @@ func (i *inventoryDB) UpdateDiscount(inventory models.Inventory) error {
 	return nil
 }
 
-func (i *inventoryDB) GetProductsFromWarehouse(limit, offset int) ([]models.Inventory, error) {
+func (i *inventoryDB) GetProductsFromWarehouse(warehouseID uuid.UUID, limit, offset int) (models.PaginationProductsOfWarehouse, error) {
 	logg.Logger.Info("Запрос на получение информации о продуктах на складе.",
 		zap.String("package", "database.GetCostOfProductInStock"))
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 
 	defer cancel()
+
+	paginationCounter := inventoryPagination.NewPaginationCounter(i.dbpool)
+
+	paginateInventory := inventoryPagination.NewPaginateItemsInventory(*paginationCounter)
+
+	limit, offset, count, err := paginateInventory.PaginateInventory(warehouseID, limit, offset)
 
 	rows, err := i.dbpool.Query(ctx,
 		`SELECT 
@@ -133,13 +141,17 @@ func (i *inventoryDB) GetProductsFromWarehouse(limit, offset int) ([]models.Inve
     	i.price, 
     	i.price * (1 - i.percentage_discount_from_price * 0.01) AS discounted_price 
 		FROM inventory i 
-		    INNER JOIN products p ON p.id = i.product_id;`)
+		    INNER JOIN products p ON p.id = i.product_id 
+			WHERE i.warehouse_id = $1
+		    LIMIT $2 OFFSET $3`, warehouseID, limit, offset)
 
 	if err != nil {
 		logg.Logger.Error(err.Error(),
 			zap.String("package", "database.GetCostOfProductInStock"))
-		return []models.Inventory{}, err
+		return models.PaginationProductsOfWarehouse{}, err
 	}
+
+	paginationItems := models.Pagination{Limit: limit, Offset: offset, Total: count}
 
 	data := NewScanRows(rows)
 	inventory, err := data.ScanRowsOfInventory()
@@ -147,11 +159,11 @@ func (i *inventoryDB) GetProductsFromWarehouse(limit, offset int) ([]models.Inve
 	if err != nil {
 		logg.Logger.Error(err.Error(),
 			zap.String("package", "database.GetCostOfProductInStock"))
-		return []models.Inventory{}, err
+		return models.PaginationProductsOfWarehouse{Pagination: paginationItems}, err
 	}
 
 	logg.Logger.Info("Данные успешно отправлены.",
 		zap.String("package", "database.GetCostOfProductInStock"))
 
-	return inventory, nil
+	return models.PaginationProductsOfWarehouse{inventory, paginationItems}, nil
 }

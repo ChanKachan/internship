@@ -1,6 +1,7 @@
 package inventoryPagination
 
 import (
+	"github.com/google/uuid"
 	"go.uber.org/zap"
 	"internship/internal/logg"
 	"internship/internal/pagination"
@@ -14,14 +15,14 @@ type paginateItemsInventory struct {
 	count paginationItems
 }
 
-func NewPaginateItemsInventory() *paginateItemsInventory {
-	return &paginateItemsInventory{}
+func NewPaginateItemsInventory(count paginationItems) *paginateItemsInventory {
+	return &paginateItemsInventory{count}
 }
 
-func (p *paginateItemsInventory) PaginateInventory(limit, offset int) (int, int, int, error) {
+func (p *paginateItemsInventory) PaginateInventory(warehouseID uuid.UUID, limit, offset int) (int, int, int, error) {
 	logg.Logger.Info("Запуск метод пагинации.",
 		zap.String("package", "inventoryPagination.PaginateInventory"))
-	count := p.count.inventoryCount()
+	count := p.count.inventoryCount(warehouseID)
 
 	item := pagination.NewExceedingLimitItems(count, limit, offset)
 
